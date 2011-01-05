@@ -1,0 +1,48 @@
+Hello, happy developer!
+
+Curator is a small library designed to help you validate user input in your
+php application. It is really simple to use. Add the following to the beginning
+of your code (even before the first includes):
+    require_once('curator.php');
+    $_GET = new Curator($_GET);
+
+(Replace $_GET by $_POST or $_COOKIE or whatever data you want to filter).
+
+Then, use a validation function on parameters:
+    $_GET->sanitize("pageid", "valid_uint");
+
+Here, it will verify if $_GET["pageid"] is an unsigned integer. You can
+validate the data anywhere you want: at your script's beginning, in a method,
+just before reading it...
+
+Then, try to access the parameter:
+    $a = $_GET["pageid"];
+
+If the parameter was successfully sanitized, you will get it in $a. If not,
+an exception will be thrown. Yes, it's rude. But you just got an invalid 
+parameter from a browser. It is either a bug, or someone with bad intentions
+messing with your website. So you'd rather stop execution and display an error
+right now.
+
+With this design, Curator will help you recognize early unvalidated input, and
+will prevent quick and dirty code from going to production.
+
+There are not many validation functions, intentionally. Only you will now what
+your data is made of. You can define new functions, and pass their name to
+the sanitize method, or even use anonymous functions.
+
+Here, you're checking that pageid is an unsigned integer in the range 1..10 
+using an anonymous function.
+
+ $_GET->sanitize("pageid", 
+                function($var)
+                {
+                    $uint=valid_uint($var);
+                    if($uint>0 && $uint<10)
+                        return $uint;
+                });
+
+Go ahead and read the code. The main file, curator.php, is not very long, and
+tests/test.php holds unit tests that are good examples of Curator's use.
+
+Thanks for reading, and happy hacking!
